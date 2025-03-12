@@ -1,0 +1,48 @@
+clc; clear; close all;
+
+% Parámetros de la señal
+f_signal = 100;       % Frecuencia de la señal (Hz)
+T_signal = 1 / f_signal; % Período de la señal (s)
+A = 1/2;                % Amplitud de la señal
+offset = 0.9;         % Offset en V (900 mV)
+num_ciclos = 3;       % Número de ciclos a graficar
+fase = 0;             % Fase inicial en radianes
+fs = 10000;            % Frecuencia de muestreo (Hz) por defecto
+
+% Número de muestras por ciclo
+num_muestras_por_ciclo = 10; % Ajustar este valor según lo deseado
+num_samples = num_muestras_por_ciclo * num_ciclos; % Total de muestras
+
+% Vector de tiempo para la señal continua
+t_total = linspace(0, num_ciclos * T_signal, num_ciclos * fs);
+senal_total = A * sin(2 * pi * f_signal * t_total + fase) + offset;
+
+% Cargar datos desde archivo
+filename = 'S_I_650.txt';
+data = readmatrix(filename);
+t_data = data(:,1) / 1e6; % Convertir tiempo de us a s
+senal_data = data(:,2);
+
+% Seleccionar datos para dos ciclos
+indices = (t_data >= 0) & (t_data <= 3 * T_signal);
+t_data = t_data(indices);
+senal_data = senal_data(indices);
+
+% Vector de tiempo para muestras discretas
+t_muestras = linspace(0, num_ciclos * T_signal, num_samples);
+senal_muestras = A * sin(2 * pi * f_signal * t_muestras + fase) + offset;
+
+% Graficar señal continua
+figure;
+plot(t_total, senal_total, 'b-', 'LineWidth', 1.2); % Señal continua
+hold on;
+stem(t_muestras, senal_muestras, 'ro', 'MarkerFaceColor', 'r'); % Muestras teóricas
+stem(t_data, senal_data, 'g^', 'MarkerFaceColor', 'g'); % Muestras experimentales
+plot(t_data, senal_data, 'g-', 'LineWidth', 1); % Trazar la señal muestreada
+
+title('Comparación de Señal Teórica y Datos Muestreados con Traza');
+xlabel('Tiempo (s)');
+ylabel('Amplitud');
+grid on;
+legend('Señal Teórica', 'Muestras Teóricas', 'Muestras Experimentales', 'Traza Muestras');
+hold off;
