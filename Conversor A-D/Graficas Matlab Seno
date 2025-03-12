@@ -1,4 +1,7 @@
-clc; clear; close all;
+% Este codígo permite la comparación de una señal Senoidal contra un muestreo usando un conversor A/D 
+%   1. Configurar parametros de la señal 
+%   2. Añadir el archivo "datos.txt" que contiene los datos del muestreo
+%   3. Ejecutar 
 
 % Parámetros de la señal
 f_signal = 100;       % Frecuencia de la señal (Hz)
