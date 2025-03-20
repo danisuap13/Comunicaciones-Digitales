@@ -1,7 +1,8 @@
-% El siguiente Codigo permite filtrar varios periodos de las muestras tomadas en el laboratorio 
-% para graficar la señal en el dominio del tiempo y poder analisarla, además de graficar la FFT
-% Se encuentra en bucle ya que va a graficar todas las muestras por frecuencia, unicamente 
-% asegurarse de modificar el nombre de cada archivo como corresponda, ejemplo 'muestras_300_64.txt'
+% El siguiente código permite filtrar varios períodos de las muestras tomadas en el laboratorio  
+% para graficar la señal en el dominio del tiempo y poder analizarla, además de graficar la FFT.  
+% Se encuentra en un bucle, ya que graficará todas las muestras por frecuencia. Únicamente  
+% hay que asegurarse de modificar el nombre de cada archivo según corresponda, por ejemplo:  
+% 'muestras_300_64.txt' y que el archivo .m se encuentre en la misma carpeta.
 
 % Definir los valores de N_FFT a procesar
 n_fft_values = [64, 128, 256, 512, 1024];
