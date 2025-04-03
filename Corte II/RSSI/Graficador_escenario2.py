@@ -1,37 +1,72 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Datos del archivo "Medidas Escenario 1.txt"
-distancia_esc1 = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18])
-rssi_esc1 = np.array([-47.90, -52.43, -61.22, -66.69, -63.00, -63.15, -74.71, -73.03, -77.15, -79.18,
-                      -79.49, -77.86, -82.29, -83.42, -84.42, -84.87, -84.40, -85.99, -82.78])
-desviacion_esc1 = np.array([2.64, 2.26, 5.60, 3.33, 5.03, 3.21, 3.90, 2.23, 2.35, 1.37,
-                            2.51, 1.94, 3.00, 2.34, 1.82, 2.23, 1.67, 1.58, 2.43])
+# Parámetros del modelo de propagación en espacio libre
+f = 2.4e9  # Frecuencia en Hz (2.4 GHz)
+c = 3e8  # Velocidad de la luz en m/s
+lambda_ = c / f  # Longitud de onda
+Pt = 0  # Potencia transmitida en dBm
+Gt = 0  # Ganancia de la antena transmisora en dB
+Gr = 0  # Ganancia de la antena receptora en dB
 
-# Filtrar solo las muestras 2 (índices pares)
-distancia_muestras2 = distancia_esc1[::2]
-rssi_muestras2 = rssi_esc1[::2]
-desviacion_muestras2 = desviacion_esc1[::2]
+# Datos experimentales - Escenario 2
+distancia_esc2 = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 
+                           19, 20, 21, 22, 23, 24, 25, 26, 27, 28])
+rssi_esc2 = np.array([-36.4, -49.29, -65.43, -63.61, -65.2, -73.51, -73.9, -73.68, -76.38, -79.48, 
+                       -79.11, -79.78, -76.96, -76.86, -79.93, -78.61, -76.71, -79.97, -83.15, -83.31, 
+                       -83, -84.39, -80.05, -82.71, -81.96, -80.88, -81.41, -84.68, -87.88])
+desviacion_esc2 = np.array([4.69, 3.75, 4.33, 1.8, 1.82, 3.67, 4.49, 2.57, 3.35, 2.46, 
+                             2.63, 4.48, 1.71, 2.09, 2.1, 1.5, 1.77, 1.61, 1.97, 1.23, 
+                             1.63, 2.04, 1.86, 2.17, 2.22, 1.65, 3.11, 1.99, 2.15])
 
-# Cálculo del error estándar para las muestras 2
-error_estandar_muestras2 = desviacion_muestras2 / np.sqrt(len(rssi_muestras2))
+# Modelo teórico sin ajuste
+d_teorico = np.linspace(1, 28, 100)  # Distancias para la curva teórica
+rssi_teorico = Pt + Gt + Gr - 20 * np.log10(d_teorico) - 20 * np.log10(f) - 32.44  # Fórmula teórica
 
-# Crear figura y graficar solo las muestras 2
-plt.figure(figsize=(10, 5))
-plt.errorbar(distancia_muestras2, rssi_muestras2, yerr=error_estandar_muestras2, fmt='ro', capsize=5, label="Error estándar")
-plt.errorbar(distancia_muestras2, rssi_muestras2, yerr=desviacion_muestras2, fmt='r-', capsize=5, label="Desviación estándar")
+# Ajuste de la curva teórica para coincidir mejor con los datos experimentales
+desplazamiento_esc2 = np.mean(rssi_esc2[:5] - rssi_teorico[:5])
+rssi_ajustado_esc2 = rssi_teorico + desplazamiento_esc2
 
-# Agregar valores de la desviación estándar debajo de la línea de desviación
-for i in range(len(distancia_muestras2)):
-    plt.text(distancia_muestras2[i], rssi_muestras2[i] - desviacion_muestras2[i] - 2,  
-             f"{desviacion_muestras2[i]:.2f}", fontsize=9, ha='center', color='red')
+# --- GRÁFICO 1: Datos experimentales con dispersión ---
+plt.figure(figsize=(8, 5))
+plt.errorbar(distancia_esc2, rssi_esc2, yerr=desviacion_esc2, fmt='o-', color='red', capsize=5, label="Datos experimentales")
 
-# Etiquetas y leyenda
-plt.xlabel("Distancia (m)", fontsize=12, fontweight='bold')
-plt.ylabel("RSSI (dBm)", fontsize=12, fontweight='bold')
-plt.title("Medidas Escenario 2", fontsize=14, fontweight='bold')
-plt.legend(fontsize=11)
+# Etiquetas de los valores de desviación estándar (intercalados)
+for i in range(len(distancia_esc2)):
+    offset = -6 if i % 2 == 0 else 6  # Alterna arriba y abajo
+    plt.text(distancia_esc2[i], rssi_esc2[i] + offset, f"{desviacion_esc2[i]:.2f}", 
+             fontsize=8, color='red', ha='center')
+
+# Configuración del gráfico
+plt.xlabel("Distancia (m)")
+plt.ylabel("RSSI (dBm)")
+plt.title("Medidas Escenario 2 - Datos experimentales con dispersión")
+plt.legend()
 plt.grid(True)
+plt.show()
 
-# Mostrar la gráfica
+# --- GRÁFICO 2: Comparación curva teórica y experimental ---
+plt.figure(figsize=(8, 5))
+plt.scatter(distancia_esc2, rssi_esc2, color='red', label="Datos experimentales")
+plt.plot(d_teorico, rssi_teorico, linestyle='dashed', color='blue', label="Curva teórica (sin ajuste)")
+
+# Configuración del gráfico
+plt.xlabel("Distancia (m)")
+plt.ylabel("RSSI (dBm)")
+plt.title("Medidas Escenario 2 - Comparación Curva Teórica y Experimental")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# --- GRÁFICO 3: Comparación curva teórica ajustada ---
+plt.figure(figsize=(8, 5))
+plt.scatter(distancia_esc2, rssi_esc2, color='red', label="Datos experimentales")
+plt.plot(d_teorico, rssi_ajustado_esc2, linestyle='solid', color='green', label="Curva ajustada")
+
+# Configuración del gráfico
+plt.xlabel("Distancia (m)")
+plt.ylabel("RSSI (dBm)")
+plt.title("Medidas Escenario 2 - Comparación con Curva Ajustada")
+plt.legend()
+plt.grid(True)
 plt.show()
