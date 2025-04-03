@@ -19,8 +19,8 @@ d_teorico = np.linspace(1, 18, 100)  # Distancias para la curva teórica
 rssi_teorico = Pt + Gt + Gr - 20 * np.log10(d_teorico) - 20 * np.log10(f) - 32.44  # Fórmula teórica
 
 # Ajuste de la curva teórica para que coincida mejor con los datos experimentales
-desplazamiento_esc1 = np.mean(rssi_esc1[:5] - rssi_teorico[:5])
-rssi_ajustado_esc1 = rssi_teorico + desplazamiento_esc1
+K_esc1 = np.mean(rssi_esc1[:5] - rssi_teorico[:5])
+rssi_ajustado_esc1 = rssi_teorico + K_esc1
 
 # --- GRAFICAR ESCENARIO 1 ---
 plt.figure(figsize=(10, 5))
@@ -38,13 +38,12 @@ plt.show()
 # --- GRAFICAR ESCENARIO 1 CON AJUSTE ---
 plt.figure(figsize=(10, 5))
 plt.scatter(distancia_esc1, rssi_esc1, color='red', label="Datos experimentales", zorder=2)
-plt.plot(d_teorico, rssi_ajustado_esc1, linestyle='solid', color='green', label="Curva ajustada", zorder=1)
+plt.plot(d_teorico, rssi_ajustado_esc1, linestyle='solid', color='green', label=f"Curva ajustada (K={K_esc1:.2f})", zorder=1)
 
 # Configuración del gráfico
 plt.xlabel("Distancia (m)")
 plt.ylabel("RSSI (dBm)")
-plt.title("Escenario 1 - Comparación con modelo teórico (ajustado)")
+plt.title(f"Escenario 1 - Comparación con modelo ajustado (K={K_esc1:.2f})")
 plt.legend()
 plt.grid(True)
 plt.show()
-
