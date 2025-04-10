@@ -19,8 +19,8 @@ from micropython import const
 # ===========================
 
 # --- Configuración de potencia y velocidad para el NRF24L01 ---
-POWER = {"0 dBm": const(0x06)}         # Potencia máxima de transmisión
-DATA_RATE = {"2 Mbps": const(0x08)}    # Tasa de datos rápida
+POWER = {"0 dBm": const(0x06), "-6 dBm": const(0x04), "-12 dBm": const(0x02), "-18 dBm": const(0x00)}         # Potencia máxima de transmisión
+DATA_RATE =  {"250 kbps": const(0x20), "1 Mbps": const(0x00), "2 Mbps": const(0x08)}    # Tasa de datos rápida
 CHANNEL = 13                           # Canal de comunicación (frecuencia = 2.413 GHz)
 
 # --- Pines físicos conectados al módulo NRF24L01 ---
